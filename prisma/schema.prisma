@@ -1,0 +1,41 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now())
+  apiKeys      ApiKey[]
+  interactions Interaction[]
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  hash      String   @unique
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Interaction {
+  id String @id @default(uuid())
+
+  type    String
+  tfOpen  DateTime  @default(now())
+  tfClose DateTime?
+  pending Boolean   @default(true)
+  userId  Int
+  user    User      @relation(fields: [userId], references: [id])
+  data    Json?
+}
