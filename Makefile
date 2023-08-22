@@ -6,9 +6,10 @@ exec_bash:
 
 migrate:
 	docker exec -ti api npx prisma migrate dev
+	make restart
 
 logs_api:
 	docker container logs api -f
 
-logs_sockets:
-	docker container logs sockets -f
+submodule_pull:
+	git submodule update --init --recursive

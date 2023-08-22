@@ -9,33 +9,36 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  username     String        @unique
-  email        String        @unique
-  password     String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @default(now())
-  apiKeys      ApiKey[]
-  interactions Interaction[]
+  id        Int               @id @default(autoincrement())
+  username  String            @unique
+  email     String            @unique
+  password  String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now())
+  type      SUBSCRIPTION_TYPE @default(free)
+  apiKeys   ApiKey[]
 }
 
 model ApiKey {
   id        Int      @id @default(autoincrement())
   key       String   @unique
   hash      String   @unique
+  iv        String
   createdAt DateTime @default(now())
+  server    String
+  login     String
+  password  String
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
 }
 
-model Interaction {
-  id String @id @default(uuid())
+model Container {
+  id   Int               @id @default(autoincrement())
+  ip   String            @unique
+  type SUBSCRIPTION_TYPE @default(free)
+}
 
-  type    String
-  tfOpen  DateTime  @default(now())
-  tfClose DateTime?
-  pending Boolean   @default(true)
-  userId  Int
-  user    User      @relation(fields: [userId], references: [id])
-  data    Json?
+enum SUBSCRIPTION_TYPE {
+  free
+  premium
 }

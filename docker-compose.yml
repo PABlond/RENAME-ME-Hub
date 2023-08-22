@@ -14,23 +14,7 @@ services:
     command: npm run dev
     depends_on:
       - db
-    networks:
-      - mqdev
-
-  sockets:
-    image: node:lts
-    container_name: sockets
-    working_dir: /app
-    volumes:
-      - ./sockets:/app
-      - ./prisma:/app/prisma
-    ports:
-      - '31854:31854'
-    environment:
-      - NODE_ENV=development
-    command: npm run dev
-    networks:
-      - mqdev
+    network_mode: "host"
 
   db:
     image: postgres:15-alpine
@@ -43,52 +27,7 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - mqdev
-  # aedes:
-  #   container_name: aedes
-  #   image: moscajs/aedes:latest
-  #   restart: always
-  #   stop_signal: SIGINT
-  #   networks:
-  #     - mqtt
-  #   command: --config /data/mongodbConfig.js # add here the options to pass to aedes
-  #   volumes:
-  #     - ./:/data # map the local folder to aedes
-  #   ports:
-  #     - '1883:1883'
-  #     - '3000:3000'
-  #     - '4000:4000'
-  #     - '8883:8883'
-  # mongo:
-  #   container_name: mongo
-  #   networks:
-  #     - mqtt
-  #   logging:
-  #     driver: none
-  #   image: mvertes/alpine-mongo
-  #   volumes:
-  #     - db-data:/data/db
-  #   ports:
-  #     - "27017:27017"
-  # redis:
-  #   image: redis:6.2.13-alpine
-  #   container_name: redis
-  #   ports:
-  #     - "6379:6379"
-  #   volumes:
-  #     - .:/app
-  #   command: redis-server --appendonly yes
-  # rabbitmq:
-  #   image: rabbitmq:management
-  #   container_name: rabbitmq
-  #   ports:
-  #     - '15672:15672' # Web UI
-  #     - '5672:5672' # AMQP
+    network_mode: "host"
+      
 volumes:
   pgdata:
-    # db-data:
-    #   name: db-data
-
-networks:
-  mqdev:
