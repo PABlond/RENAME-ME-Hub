@@ -1,40 +1,20 @@
 import { NextFunction, Request, Response } from 'express'
-import prisma from '../utils/prisma'
-import { ApiKey, User } from '@prisma/client'
-import {createClient} from 'redis'
+import httpStatus from 'http-status'
 
-export type RequestContext = Request & {
-  user?: User & ApiKey;
-  redisClient?: ReturnType<typeof createClient>
-}
+import prisma from '../utils/prisma'
+
 export const authRoute = async (
-  req: RequestContext,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<Response<void> | void> => {
-// const client = createClient({
-//   url: 'redis://redis:6379'
-// })
-//   await client.connect()
-//   await client.set('pending-order', JSON.stringify([]))
-  // console.log(client.isReady)
   const key = req.headers['api_key'] as string
-  if (!key) return res.status(400).json('Unauthorized')
+  if (!key && typeof key !== 'string') return res.status(httpStatus.UNAUTHORIZED).json('API_KEY is missing')
   const data = await prisma.apiKey.findUnique({
     where: { key },
+    include: {user: true}
   })
-  if (!data) return res.status(400).json('Unauthorized')
-  req.user = {
-    id: 3,
-    username: 'JohnDoe',
-    key,
-    email: 'johndoe@sample.net',
-    userId: 1,
-    hash: 'SampleOfHash',
-    password: 'EncryptedPassword',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-  // req.redisClient = client
+  if (!data) return res.status(httpStatus.UNAUTHORIZED).json('API_KEY is invalid')
+  req.user = data.user
   next()
 }

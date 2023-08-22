@@ -1,15 +1,15 @@
 import { Request, Response, Router } from 'express'
+import httpStatus from 'http-status'
 
-import { authRoute } from '../middlewares/auth'
+import { accountRoutes } from './account'
 import { userRoutes } from './user'
-import { tradeRoutes } from './trade'
 
 const router = Router()
 
-router.get('/', authRoute, (_: Request, res: Response) =>
-  res.status(200).json('OK')
+router.get('/', (_: Request, res: Response) =>
+  res.status(httpStatus.OK).json('OK')
 )
+router.use('/account', accountRoutes)
 router.use('/user', userRoutes)
-router.use('/trade', tradeRoutes)
 
 export { router as apiRoutes }
